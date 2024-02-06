@@ -4,9 +4,11 @@ import bodyParser from "body-parser";
 import { log } from "console";
 import pg from "pg";
 import env from "dotenv";
+import bcrypt from "bcrypt";
 
 const app = express();
 const port = 3000;
+const saltingRounds = 10;
 env.config();
 
 const db = new pg.Client({
@@ -45,7 +47,8 @@ app.post("/register",async (req,res)=>{
     if (checkResult.rows.length > 0){
         res.render("login.ejs", {error: "User already exists. Please try again."});
     } else{
-        const InsertResult = await db.query("INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", [userName, mailID, password]);
+        const hashedPassword = await bcrypt.hash(password, saltingRounds);
+        const InsertResult = await db.query("INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", [userName, mailID, hashedPassword]);
         res.redirect("/login");
     }
 })
@@ -59,14 +62,16 @@ app.post("/login",async (req,res)=>{
     if (mailID){
         const result = await db.query("SELECT * FROM users WHERE email = $1", [mailID]);
         console.log(result.rows[0].password, password);
-        if (result.rows[0].password === password){
+        const match = await bcrypt.compare(password, result.rows[0].password);
+        console.log(match);
+        if (match){
             const UserContent = await db.query("SELECT * FROM blogs WHERE user_name = $1",[result.rows[0].name])
             console.log(UserContent.rows);
             res.render("dashboard.ejs", {UserName: result.rows[0].name, Content: UserContent.rows})
         } else{
-            res.render("login.ejs", {error_msg: "Password is incorrect. Please try again."});
-
+            res.render("login.ejs", {error_msg: "Invalid email or password."});
         }
+
     } else{
         res.render("login.ejs", {error_msg: "Please enter both email and password."});
     
