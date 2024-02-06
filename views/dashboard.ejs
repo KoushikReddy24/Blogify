@@ -1,0 +1,61 @@
+<%- include("header.ejs") %>
+
+<div class="container mt-5">
+    <h1>Dashboard</h1>
+    <h2>Welcome to the dashboard, <%= locals.UserName %></h2>
+    <div>
+        <form style="
+        width: 480px;
+        margin: 30px auto 20px auto;
+        background: #fff;
+        padding: 15px;
+        border-radius: 7px;
+        box-shadow: 0 1px 5px rgb(138, 137, 137);"
+        action="/submit" method="POST">
+          <input type="text" placeholder="title" name="newTitle"/>
+          <textarea style="width: 100%;
+          border: none;
+          padding: 4px;
+          outline: none;
+          font-size: 1.2em;
+          font-family: inherit;
+          resize: none;"
+           name="newContent" placeholder="Type your words..!!" rows="3"></textarea>
+          <input type="hidden" name="newUser" value="<%= locals.UserName %>">
+          <button style="
+          right: 18px;
+          bottom: -18px;
+          background: #f5ba13;
+          color: #fff;
+          border: none;
+          border-radius: 50%;
+          width: 36px;
+          height: 36px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+          cursor: pointer;
+          outline: none;"
+          type="submit">Add</button>
+        </form>
+      </div>
+</div>
+    <div>
+        <% locals.Content.forEach(obj => { %>
+            <div style="background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 2px 5px #ccc;
+  padding: 10px;
+  width: 240px;
+  margin: 16px;
+  float: left;">
+                <h1><%= obj.title  %></h1>
+                <p><%= obj.content %></p>
+                <form action="/delete" method="POST">
+                    <button type="submit">DELETE</button>
+                    <input type="hidden" name="hiddenName" value="<%= locals.UserName %>">
+                    <input type="hidden" name="hiddenTitle" value="<%= obj.title  %>">
+                </form>
+              </div>
+        <% }); %>
+    </div>
+
+<%- include("footer.ejs") %>
