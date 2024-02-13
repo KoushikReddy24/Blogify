@@ -2,6 +2,9 @@
 # Blog Management System
 This is a simple blog management system that allows users to register, login, create, view, and delete blog posts. It's built using Express.js, EJS templating engine, PostgreSQL for the database, and Bootstrap for styling.
 
+You can view this site at...
+https://blog-management-system-3rez.onrender.com
+
 
 ## Features
 
